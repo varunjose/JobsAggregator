@@ -1,0 +1,60 @@
+posted_within_hours: 24
+country_codes:
+  - US
+include_remote: true
+include_missing_posted_at: true
+
+title_keywords:
+  - Software Engineer
+  - Software Developer
+  - Backend
+  - Full Stack
+  - Full-Stack
+  - Frontend
+  - Front End
+  - AI Engineer
+  - ML Engineer
+  - Machine Learning
+  - Deep Learning
+  - LLM
+  - GenAI
+  - Generative AI
+  - Data Engineer
+  - Data Scientist
+  - Data Science
+  - Python
+  - Applied Scientist
+  - Research Engineer
+  - Research Scientist
+  - MLOps
+  - Platform Engineer
+  - Infrastructure Engineer
+
+resume_path: resume.example.md
+
+sources:
+  theirstack: true
+  coresignal: true
+  jobspipe: true
+  ats: true
+
+theirstack:
+  posted_at_max_age_days: 1
+  limit: 50
+  max_pages: 20
+  max_jobs: 800
+
+coresignal:
+  max_ids: 200
+  max_collect: 80
+
+jobspipe:
+  max_jobs: 400
+
+ats:
+  concurrency: 10
+  timeout_seconds: 25
+
+output_dir: data
+dashboard_dir: docs
+description_chars: 1800
