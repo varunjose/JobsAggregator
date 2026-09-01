@@ -16,6 +16,8 @@ of scraper scripts.
 - A canonical job schema with salary, location, workplace type, experience, visa language,
   skills, timestamps, original URL, apply URL, ATS, and complete source provenance.
 - URL-first and conservative fuzzy deduplication that preserves every underlying source record.
+- Incremental broad-feed checkpoints with a five-minute overlap, avoiding repeated paid retrieval
+  of the same 24-hour batch while remaining resilient to clock skew.
 - Exact U.S. and rolling freshness filters. “Posted in 24h” excludes jobs whose true publication
   time is unknown.
 - Deterministic role categorization and profile-fit scoring with no LLM/API cost.
@@ -113,7 +115,8 @@ Open [http://localhost:8000](http://localhost:8000). API documentation is availa
 
 TheirStack is automatically enabled when `THEIRSTACK_API_KEY` exists. It searches U.S. jobs from
 the configured target-title families and fetches only the recent window before applying an exact
-local timestamp cutoff.
+local timestamp cutoff. After the first run, each sync requests only jobs TheirStack discovered
+since the last successful checkpoint and explicitly excludes postings already marked closed.
 
 Direct connectors are defined in [`config/sources.yaml`](config/sources.yaml). Enable only boards
 you want to check independently:

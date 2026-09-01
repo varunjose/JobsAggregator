@@ -1,4 +1,7 @@
+import json
 from datetime import UTC, datetime
+
+import httpx
 
 from app.config import Settings
 from app.connectors.ashby import AshbyConnector
@@ -31,6 +34,32 @@ def test_theirstack_normalizes_provider_fields():
     assert job.ats == "ashby"
     assert job.remote is True  # Location is explicitly remote even when the provider flag is false.
     assert job.posted_at == datetime(2026, 9, 1, 10, tzinfo=UTC)
+
+
+def test_theirstack_fetch_uses_incremental_open_job_filter():
+    observed_payload = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        observed_payload.update(json.loads(request.content))
+        assert request.headers["Authorization"] == "Bearer secret"
+        return httpx.Response(200, json={"data": []})
+
+    settings = Settings(
+        theirstack_api_key="secret",
+        page_size=25,
+        max_pages_per_source=1,
+        sync_scheduler_enabled=False,
+    )
+    connector = TheirStackConnector(SourceSpec(type="theirstack"), settings)
+    connector.client.close()
+    connector.client = httpx.Client(transport=httpx.MockTransport(handler))
+    connector.since = datetime(2026, 9, 1, 8, tzinfo=UTC)
+    assert list(connector.fetch()) == []
+    connector.close()
+
+    assert observed_payload["is_closed"] is False
+    assert observed_payload["include_total_results"] is False
+    assert observed_payload["discovered_at_gte"] == "2026-09-01T08:00:00+00:00"
 
 
 def test_lever_and_ashby_normalize_public_records():

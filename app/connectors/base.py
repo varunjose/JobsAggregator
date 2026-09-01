@@ -73,6 +73,7 @@ class BaseConnector(ABC):
         self.spec = spec
         self.settings = settings
         self.snapshot_complete = self.complete_snapshot
+        self.since: datetime | None = None
         self.client = httpx.Client(
             timeout=settings.http_timeout_seconds,
             follow_redirects=True,

@@ -43,10 +43,13 @@ class TheirStackConnector(BaseConnector):
                 "posted_at_max_age_days": max_age_days,
                 "job_country_code_or": ["US"],
                 "job_title_pattern_or": self._title_patterns(),
-                "include_total_results": page == 0,
+                "is_closed": False,
+                "include_total_results": False,
                 "limit": limit,
                 "page": page,
             }
+            if self.since:
+                payload["discovered_at_gte"] = self.since.isoformat()
             response = self.request_json("POST", url, headers=headers, json=payload)
             records = response.get("data", []) if isinstance(response, dict) else []
             if not isinstance(records, list):

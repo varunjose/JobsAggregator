@@ -1,7 +1,7 @@
 import logging
 import threading
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import yaml
@@ -152,6 +152,19 @@ def _sync_connector(connector: BaseConnector, settings: Settings) -> SyncSummary
         status="running",
     )
     session = SessionLocal()
+    previous_run = session.scalar(
+        select(SyncRun)
+        .where(
+            SyncRun.source_key == connector.source_key,
+            SyncRun.status == "completed",
+            SyncRun.finished_at.is_not(None),
+        )
+        .order_by(SyncRun.finished_at.desc())
+        .limit(1)
+    )
+    if previous_run and previous_run.finished_at:
+        # Small overlap protects against provider and worker clock skew; dedup handles repeats.
+        connector.since = _aware(previous_run.finished_at) - timedelta(minutes=5)
     run = SyncRun(
         provider=connector.provider,
         source_key=connector.source_key,
