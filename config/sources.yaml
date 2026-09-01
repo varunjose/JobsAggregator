@@ -1,0 +1,32 @@
+# Direct ATS sources are optional accelerators. TheirStack supplies broad market coverage;
+# enable selected company boards here when you want a faster independent signal.
+sources:
+  - type: greenhouse
+    enabled: false
+    company: Example Company
+    token: company-board-token
+
+  - type: lever
+    enabled: false
+    company: Example Company
+    token: company-site-token
+
+  - type: ashby
+    enabled: false
+    company: Example Company
+    board: CompanyBoardName
+
+  - type: smartrecruiters
+    enabled: false
+    company: Example Company
+    token: company-identifier
+    fetch_details: true
+
+  # Workday does not expose one anonymous global endpoint. Configure each public tenant/site.
+  - type: workday
+    enabled: false
+    company: Example Company
+    host: example.wd1.myworkdayjobs.com
+    tenant: example
+    site: External_Careers
+    fetch_details: true

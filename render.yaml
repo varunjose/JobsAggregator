@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: jobs-aggregator-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jobs-aggregator-db
+          property: connectionString
+      - key: THEIRSTACK_API_KEY
+        sync: false
+      - key: ADMIN_API_KEY
+        generateValue: true
+      - key: SYNC_INTERVAL_MINUTES
+        value: "120"
+      - key: SYNC_SCHEDULER_ENABLED
+        value: "true"
+      - key: SYNC_ON_STARTUP
+        value: "true"
+
+databases:
+  - name: jobs-aggregator-db
+    databaseName: jobs_aggregator
+    user: jobs_aggregator

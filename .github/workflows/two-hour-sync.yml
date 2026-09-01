@@ -1,0 +1,42 @@
+name: Two-hour cloud sync
+
+on:
+  schedule:
+    # Offset from the top of the hour to reduce public runner congestion.
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jobs-aggregator-sync
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate cloud configuration
+        id: config
+        env:
+          JOBS_AGGREGATOR_URL: ${{ secrets.JOBS_AGGREGATOR_URL }}
+          JOBS_AGGREGATOR_ADMIN_API_KEY: ${{ secrets.JOBS_AGGREGATOR_ADMIN_API_KEY }}
+        run: |
+          if [ -z "$JOBS_AGGREGATOR_URL" ] || [ -z "$JOBS_AGGREGATOR_ADMIN_API_KEY" ]; then
+            echo "::warning::Cloud sync is waiting for JOBS_AGGREGATOR_URL and JOBS_AGGREGATOR_ADMIN_API_KEY repository secrets."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Start ingestion
+        if: steps.config.outputs.ready == 'true'
+        env:
+          JOBS_AGGREGATOR_URL: ${{ secrets.JOBS_AGGREGATOR_URL }}
+          JOBS_AGGREGATOR_ADMIN_API_KEY: ${{ secrets.JOBS_AGGREGATOR_ADMIN_API_KEY }}
+        run: |
+          curl --fail-with-body --retry 3 --retry-all-errors \
+            --request POST \
+            --header "X-Admin-Key: $JOBS_AGGREGATOR_ADMIN_API_KEY" \
+            "${JOBS_AGGREGATOR_URL%/}/api/sync"

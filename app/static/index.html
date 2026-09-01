@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Fresh, normalized U.S. technology jobs from broad-market and direct ATS sources."
+    />
+    <title>JobSignal — U.S. job intelligence</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#jobs-list">Skip to jobs</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="JobSignal home">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span>JobSignal</span>
+        </a>
+        <div class="header-actions">
+          <div class="live-status" id="live-status">
+            <span class="status-dot"></span>
+            <span>Checking sources</span>
+          </div>
+          <button class="button button-secondary" id="sync-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 7v5h-5M4 17v-5h5M18.5 9A7 7 0 0 0 6.3 6.3L4 9m16 6-2.3 2.7A7 7 0 0 1 5.5 15" />
+            </svg>
+            Sync now
+          </button>
+          <a class="button button-primary" href="/docs">API docs</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow"><span></span> United States hiring infrastructure</div>
+        <h1>Find the job when it is <em>actually new.</em></h1>
+        <p>
+          One clean view across broad-market feeds, company career sites, and leading ATS
+          platforms. Every result includes freshness, provenance, salary, and fit signals.
+        </p>
+        <div class="hero-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-4-4"></path>
+          </svg>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Search title, skill, company, or location"
+            autocomplete="off"
+            aria-label="Search jobs"
+          />
+          <kbd>⌘ K</kbd>
+        </div>
+      </section>
+
+      <section class="stats-grid" aria-label="Market summary">
+        <article class="stat-card">
+          <span class="stat-label">Posted in 24h</span>
+          <strong id="stat-fresh">—</strong>
+          <small>Source-reported posted time</small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Companies hiring</span>
+          <strong id="stat-companies">—</strong>
+          <small>Unique employers</small>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Remote roles</span>
+          <strong id="stat-remote">—</strong>
+          <small>U.S.-eligible remote</small>
+        </article>
+        <article class="stat-card accent-stat">
+          <span class="stat-label">High-fit roles</span>
+          <strong id="stat-fit">—</strong>
+          <small>Fit score of 70+</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <aside class="filters" aria-label="Job filters">
+          <div class="filter-heading">
+            <h2>Filters</h2>
+            <button id="clear-filters" type="button">Clear</button>
+          </div>
+
+          <label class="field">
+            <span>Freshness window</span>
+            <select id="hours-filter">
+              <option value="24">Past 24 hours</option>
+              <option value="48">Past 48 hours</option>
+              <option value="72">Past 3 days</option>
+              <option value="168">Past 7 days</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Timestamp basis</span>
+            <select id="freshness-filter">
+              <option value="posted">Verified posted time</option>
+              <option value="either">Posted or first seen</option>
+              <option value="discovered">First seen by this app</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Role category</span>
+            <select id="category-filter">
+              <option value="">All categories</option>
+              <option value="AI / ML">AI / ML</option>
+              <option value="Software Engineering">Software engineering</option>
+              <option value="Backend / Python">Backend / Python</option>
+              <option value="Full Stack / Frontend">Full stack / Frontend</option>
+              <option value="Data Engineering">Data engineering</option>
+              <option value="Data Science">Data science</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>State</span>
+            <input id="state-filter" maxlength="2" placeholder="e.g. NY" />
+          </label>
+
+          <label class="check-field">
+            <input id="remote-filter" type="checkbox" />
+            <span class="check-box"></span>
+            Remote only
+          </label>
+
+          <label class="field">
+            <span>Minimum fit <output id="fit-output">0</output></span>
+            <input id="fit-filter" type="range" min="0" max="90" step="10" value="0" />
+          </label>
+
+          <label class="field">
+            <span>Minimum salary</span>
+            <select id="salary-filter">
+              <option value="">Any salary</option>
+              <option value="80000">$80k+</option>
+              <option value="100000">$100k+</option>
+              <option value="120000">$120k+</option>
+              <option value="150000">$150k+</option>
+            </select>
+          </label>
+
+          <div class="source-panel">
+            <div class="source-panel-title">
+              <span>Source coverage</span>
+              <span id="source-count">—</span>
+            </div>
+            <div id="source-list" class="source-list">
+              <span class="source-placeholder"></span>
+              <span class="source-placeholder"></span>
+              <span class="source-placeholder"></span>
+            </div>
+            <p>Broad feed + direct company ATS checks every two hours.</p>
+          </div>
+        </aside>
+
+        <div class="results">
+          <div class="results-toolbar">
+            <div>
+              <h2>Fresh opportunities</h2>
+              <p id="result-summary">Loading the newest jobs…</p>
+            </div>
+            <label class="sort-control">
+              <span>Sort</span>
+              <select id="sort-filter">
+                <option value="newest">Newest first</option>
+                <option value="fit">Best fit</option>
+                <option value="salary">Highest salary</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="active-filters" class="active-filters" aria-live="polite"></div>
+          <div id="jobs-list" class="jobs-list" aria-live="polite">
+            <article class="job-card skeleton-card"></article>
+            <article class="job-card skeleton-card"></article>
+            <article class="job-card skeleton-card"></article>
+          </div>
+          <div id="empty-state" class="empty-state" hidden>
+            <div class="empty-icon">⌁</div>
+            <h3>No jobs match these filters</h3>
+            <p>Try “posted or first seen,” expand the time window, or lower the fit score.</p>
+            <button class="button button-secondary" type="button" id="empty-clear">Clear filters</button>
+          </div>
+          <div class="pagination" id="pagination" hidden>
+            <button class="button button-secondary" id="previous-page" type="button">Previous</button>
+            <span id="page-label"></span>
+            <button class="button button-secondary" id="next-page" type="button">Next</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+    <aside class="job-drawer" id="job-drawer" aria-label="Job details" aria-hidden="true">
+      <button class="drawer-close" id="drawer-close" type="button" aria-label="Close job details">×</button>
+      <div id="drawer-content"></div>
+    </aside>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <footer>
+      <span>JobSignal</span>
+      <p>Transparent job data. No invented timestamps. No duplicate noise.</p>
+      <a href="/docs">OpenAPI</a>
+    </footer>
+  </body>
+</html>
