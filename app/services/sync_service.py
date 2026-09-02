@@ -26,6 +26,7 @@ from app.services.enrichment import (
 
 logger = logging.getLogger(__name__)
 _sync_lock = threading.Lock()
+BROAD_FEED_PROVIDERS = {"jobicy", "remoteok", "theirstack"}
 
 
 @dataclass
@@ -314,8 +315,8 @@ def _merge_job(
     canonical_url: str | None,
     now: datetime,
 ) -> None:
-    current_is_broad = job.primary_provider == "theirstack"
-    incoming_is_direct = normalized.provider != "theirstack"
+    current_is_broad = job.primary_provider in BROAD_FEED_PROVIDERS
+    incoming_is_direct = normalized.provider not in BROAD_FEED_PROVIDERS
     prefer_incoming = current_is_broad and incoming_is_direct
 
     core_fields = (

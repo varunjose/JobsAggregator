@@ -1,6 +1,29 @@
-# Direct ATS sources are optional accelerators. TheirStack supplies broad market coverage;
-# enable selected company boards here when you want a faster independent signal.
+# These keyless public feeds make a fresh clone useful without any paid data provider.
+# Jobicy permits automated polling no more than hourly; this app runs every two hours.
 sources:
+  - type: jobicy
+    enabled: true
+    options:
+      geo: usa
+      industry: engineering
+      count: 200
+
+  - type: jobicy
+    enabled: true
+    options:
+      geo: usa
+      industry: data-science
+      count: 200
+
+  # Remote OK requires attribution and a link back. JobSignal preserves its provider name
+  # and canonical URL on every record. Limit the feed to relevant technical job families.
+  - type: remoteok
+    enabled: true
+    options:
+      targeted_only: true
+
+  # Direct ATS GET endpoints are also free, but every company has its own board identifier.
+  # Copy a block, set the real company/token, and enable it for the companies you follow.
   - type: greenhouse
     enabled: false
     company: Example Company

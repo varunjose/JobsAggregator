@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "jobs-aggregator"
 version = "1.0.0"
-description = "A normalized, deduplicated U.S. job aggregator with broad-feed and direct ATS connectors."
+description = "A normalized, deduplicated U.S. job aggregator with free feeds and direct ATS connectors."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}

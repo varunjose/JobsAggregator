@@ -55,7 +55,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(
     title="Jobs Aggregator API",
     version=__version__,
-    description="Normalized and deduplicated job data from broad-market and direct ATS feeds.",
+    description="Normalized and deduplicated job data from free public feeds and direct ATS APIs.",
     lifespan=lifespan,
 )
 
@@ -198,8 +198,8 @@ def trigger_sync(
         raise HTTPException(
             status_code=409,
             detail=(
-                "No sources are configured. Set THEIRSTACK_API_KEY or enable a direct ATS "
-                "source in config/sources.yaml."
+                "No sources are configured. Enable a free feed or direct ATS source in "
+                "config/sources.yaml, or set an optional provider API key."
             ),
         )
     background_tasks.add_task(_background_sync, source)

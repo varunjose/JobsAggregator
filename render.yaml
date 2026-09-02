@@ -12,8 +12,6 @@ services:
         fromDatabase:
           name: jobs-aggregator-db
           property: connectionString
-      - key: THEIRSTACK_API_KEY
-        sync: false
       - key: ADMIN_API_KEY
         generateValue: true
       - key: SYNC_INTERVAL_MINUTES
